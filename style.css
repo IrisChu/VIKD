@@ -1,0 +1,34 @@
+body {
+	font-family: Arial;
+}
+
+.header {
+	text-align: center;
+	font-weight: bold;
+	color: grey;
+	padding: 1em 1em 0 1em;
+}
+
+#container {
+	margin: 0 auto;
+	width: 80%;
+	padding: 2em;
+}
+
+#search-container {
+	background-color: #F2F2F2;
+	padding: 2em;
+}
+
+.button {
+	border-radius: 8px;
+	background-color: #2aa6e6;
+	color: white;
+	border: 1px solid grey;
+	font-weight: bold;
+	padding: 1px 1em;
+}
+
+.button:hover {
+	cursor: pointer;
+}

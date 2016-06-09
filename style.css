@@ -9,14 +9,43 @@ body {
 	padding: 1em 1em 0 1em;
 }
 
+#banner {
+	width: 100%;
+}
+
+#navbar {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: #333;
+}
+
+#navbar li {
+   float: left;
+}
+
+#navbar li a {
+	display: block;
+	color: white;
+	text-align: center;
+	padding: 14px 16px;
+	text-decoration: none;
+}
+
+#navbar li a:hover {
+	background-color: #111;
+}
+
 #container {
 	margin: 0 auto;
 	width: 80%;
-	padding: 2em;
+	min-height: 60rem;
+	padding: 0 2em;
 }
 
 #search-container {
-	background-color: #F2F2F2;
+	background-color: #e2e2e2;
 	padding: 2em;
 }
 
@@ -30,5 +59,9 @@ body {
 }
 
 .button:hover {
+	cursor: pointer;
+}
+
+.redirect {
 	cursor: pointer;
 }

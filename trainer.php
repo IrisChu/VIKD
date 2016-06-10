@@ -18,45 +18,49 @@
 $trainerID = $_REQUEST['pokemonID'];
 $db_conn = OCILogon("ora_k7b8", "a73488090", "ug");
 
-if ($db_conn) {
+if ($db_conn && isset($trainerID)) {
   //get trainer info
   $sqlStmt = "select * from trainers where TRAINERID = " . $trainerID;
   $trainerStatement = OCIParse($db_conn, $sqlStmt); 
   OCIExecute($trainerStatement);
   
   $columnName = 'TRAINERNAME';
-  printSingleResult($trainerStatement, $columnName);
+  $trainerExists = printTrainerInfo($trainerStatement, $columnName, $trainerID);
   
-  //get item info
-  $itemName = 'ITEMNAME';
-  $itemCount = 'ITEMCOUNT';
-  $itemSqlStmt = "select {$itemName}, count(*) as {$itemCount} from trainers natural inner join items where TRAINERID = {$trainerID} group by {$itemName}";
-  $itemStatement = OCIParse($db_conn, $itemSqlStmt); 
-  OCIExecute($itemStatement);
- 
-  echo '<h2>Item List</h2>';
-  printResultAsTable2Columns($itemStatement, $itemName, $itemCount);
-  
-  //get pokemon info
-  $pokemonSqlStmt = "select * from trainers, pokemon where trainers.TRAINERID = pokemon.TRAINERID and trainers.TRAINERID = " . $trainerID;
-  $pokemonStatement = OCIParse($db_conn, $pokemonSqlStmt); 
-  OCIExecute($pokemonStatement);
-  
-  $pokemonName = 'POKEMONNAME';
-  echo '<h2>Pokemon List</h2>';
-  printResultAsTable1Column($pokemonStatement, $pokemonName);
+  if($trainerExists) {
+	  //get item info
+	  $itemName = 'ITEMNAME';
+	  $itemCount = 'ITEMCOUNT';
+	  $itemSqlStmt = "select {$itemName}, count(*) as {$itemCount} from trainers natural inner join items where TRAINERID = {$trainerID} group by {$itemName}";
+	  $itemStatement = OCIParse($db_conn, $itemSqlStmt); 
+	  OCIExecute($itemStatement);
+	 
+	  echo '<h2>Item List</h2>';
+	  printResultAsTable2Columns($itemStatement, $itemName, $itemCount);
+	  
+	  //get pokemon info
+	  $pokemonSqlStmt = "select * from trainers, pokemon where trainers.TRAINERID = pokemon.TRAINERID and trainers.TRAINERID = " . $trainerID;
+	  $pokemonStatement = OCIParse($db_conn, $pokemonSqlStmt); 
+	  OCIExecute($pokemonStatement);
+	  
+	  $pokemonName = 'POKEMONNAME';
+	  echo '<h2>Pokemon List</h2>';
+	  printResultAsTable1Column($pokemonStatement, $pokemonName);
+  }
 }
 OCILogoff($db_conn);
 
 //helper functions
-function printSingleResult($result, $columnName) {
+function printTrainerInfo($result, $columnName, $trainerID) {
 	$row = OCI_Fetch_Array($result, OCI_BOTH);
 	$value = $row[$columnName];
 	if(isset($value)) {
 		echo 'Welcome, Trainer ' . $value . '!';
 	} else {
-		echo '<script>alert("NO '.$columnName. ' EXISTS FOR THAT ID")</script>' ;
+		echo '<script>alert("No trainer exists with ID '. $trainerID .'")</script>' ;
+		return false;
 	}
+	return true;
 }
 
 function printResultAsTable1Column($result, $columnName) {

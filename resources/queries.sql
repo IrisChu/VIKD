@@ -19,7 +19,7 @@ WHERE t.trainerId = p.trainerId
 					AND t.trainerId = t1.trainerId));
 
 
-/* ADMIN Page
+/* ADMINISTRATION Page
    AGGREGATION QUERY: Find the number of each type of pokeball owned by each trainer*/
 
 SELECT trainerName, itemName as Poke_Ball, count(itemName) as Number_of_Balls
@@ -32,13 +32,18 @@ ORDER BY trainerName;
 /* TRAINERS PAGE
 	NESTED AGGREGATION: Find locations with more trainers than pokemon */
 
+CREATE VIEW pokemon_in_area AS
+(SELECT b.locationName, count(trainerId) AS TRAINERCOUNT
+			 FROM Birthplace b, Trainers t
+		 	 WHERE b.locationName = t.locationName
+			 GROUP BY b.locationName);
+
+CREATE VIEW trainer_in_area AS
+(SELECT b.locationName, count(pokemonID) AS POKEMONCOUNT
+		 	 FROM Birthplace b, Pokemon p
+		   WHERE b.locationName = p.locationName
+		   GROUP BY b.locationName);
+
 SELECT locationName
-FROM Birthplace b
-WHERE (SELECT count(trainerId) AS countT
-			 FROM Birthplace b1, Trainers t1
-		 	 WHERE b1.locationName = t1.locationName
-			 GROUP BY b1.locationName
-			 having counT < ( select count(pokemonID)
-		 	 from Birthplace b2, Pokemon p1
-		   where b2.locationName = p1.locationName AND b2.locationName = b1.locationName
-		   GROUP BY b2.locationName));
+FROM trainer_in_area NATURAL FULL OUTER JOIN pokemon_in_area
+WHERE POKEMONCOUNT > TRAINERCOUNT;

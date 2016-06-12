@@ -1,17 +1,3 @@
-
-
-/*
-CREATE TABLE Catch
-  (pokemonId integer PRIMARY KEY,
-  cdate date,
-  ball varchar(20),
-  FOREIGN KEY (trainerId) REFERENCES Pokemon);
-
-CREATE TABLE Purchase
-  (itemId integer PRIMARY KEY,
-  pdate date,
-  FOREIGN KEY itemId REFERENCES Items);*/
-
   drop table Pokemon;
   drop table Items;
   drop table Trainers;

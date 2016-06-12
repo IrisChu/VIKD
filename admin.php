@@ -9,37 +9,113 @@
 
 <h1 class="header"> Administration Page</h1>
 
-<div>
+
+<form id="search-container" action="admin.php" method="post">
+  <h3> Add New Trainer </h3>
+  Trainer Id:   <br>   <input type="number" name="tid" required min="0"> <br>
+  Trainer Name: <br>   <input type="text" name="tname" maxlength="30"> <br>
+  Birthplace:   <br>
+    <select name="birthplace">
+      <option value="Azure Bay"> Azure Bay </option> <br>
+      <option value="Amity Square"> Amity Square </option> <br>
+      <option value="Bell Tower"> Bell Tower </option> <br>
+      <option value="Eterna City"> Eterna City </option> <br>
+      <option value="Small Court"> Small Court </option> <br>
+      <option value="Dreamyard"> Dreamyard </option> <br>
+      <option value="Roshan City"> Roshan City </option> <br>
+      <option value="Lagoon Town"> Lagoon Town </option> <br>
+    </select> <br><br>
+  Gender: <br>
+    <input type="radio" name="gender" value="Male" checked> Male<br>
+    <input type="radio" name="gender" value="Female"> Female<br>
+    <input type="radio" name="gender" value="Other"> Other<br>
+  <!--Pick Your Starter Pokemon: <br>
+    <option value="Charmandar"> Charmandar-->
+  <br>
+<input class="button" type="submit" value="Add" name="addtrainer"> <br>
+</form>
+
   <form id="search-container" action="admin.php" method="post">
-  <h3> Add Pokemon Species </h3>
-    Species Name: <br>   <input type="text" name="sname" required> <br>
-    Evolves Into: <br> <input type="text" name="postEvo"> <br>
-    Evolved From: <br>  <input type="text" name="preEvo"> <br>
-    <p> Type: </p>
-      <input type="radio" name="type" value="Fire" checked> Fire <br>
-      <input type="radio" name="type" value="Water"> Water <br>
-      <input type="radio" name="type" value="Grass"> Grass <br>
-      <input type="radio" name="type" value="Psychic"> Psychic <br>
-      <input type="radio" name="type" value="Rock"> Rock <br>
-      <input type="radio" name="type" value="Lightning"> Lightning <br><br>
-  <input class="button" type="submit" value="Add">
+    <h3> Add Pokemon Species </h3>
+    Species Name: <br>   <input type="text" name="sname" required maxlength="20"> <br>
+    Evolves Into: <br>   <input type="text" name="postEvo" maxlength="20"> <br>
+    Evolved From: <br>   <input type="text" name="preEvo" maxlength="20"><br>
+    Type: <br>
+      <select name="type">
+        <option value="Fire"> Fire </option> <br>
+        <option value="Water"> Water </option> <br>
+        <option value="Grass"> Grass </option> <br>
+        <option value="Psychic"> Psychic </option> <br>
+        <option value="Rock"> Rock </option> <br>
+        <option value="Lightning"> Lightning </option> <br>
+      </select> <br> <br>
+  <input class="button" type="submit" value="Add" name="addspecies"> <br>
   </form>
-</div>
+
+
+  <form id="search-container" action="admin.php" method="post">
+    <h3> Update Pokemon </h3>
+    Pokemon Id: <br> <input type="number" name="pid" required min="0"> <br>
+    Field to Update:<br>
+      <select name="updatefield">
+        <option value="sname"> Species </option>
+        <option value="pokemonName"> Name </option>
+      </select> <br>
+    Update to: <br> <input type="text" name="newvalue" required maxlength="20"> <br><br>
+    <input class="button" type="submit" value="Update" name="updatepokemon">
+  </form>
+
+
+  <form id="search-container" action="admin.php" method="post">
+    <h3> Display Statistics </h3>
+    TODO: <br>
+              Display regions to find the most pokemon of a certain type <br>
+              Display cities with more pokemon than trainers <br>
+              Display regions that are most popular for pokemon training (most trainers born there) <br>
+              Add some sort of delete function with cascade and table reset <br>
+
+  </form>
 
 <?php
-$sname = $_REQUEST['sname'];
-$postEvo = $_REQUEST['postEvo'];
-$preEvo = $_REQUEST['preEvo'];
-$type = $_REQUEST['type'];
+
+
 $db_conn = OCILogon("ora_k7b8", "a73488090", "ug");
 
 if ($db_conn) {
-  //add new species
-  $insertStmt = "insert into SPECIES values ('{$sname}', '{$postEvo}', '{$preEvo}', '{$type}')";
-  $addspecies = OCIParse($db_conn, $insertStmt);
-  OCIExecute($addspecies);
 
-  $slist = "select sname, typeName from species";
+  if (array_key_exists('addtrainer', $_POST)) {
+    //Add new Trainer
+    //TODO: add trigger, all new trainers get a pokeball and a starter pokemon (how?)
+    $tid = $_REQUEST['tid'];
+    $tname = $_REQUEST['tname'];
+    $gender = $_REQUEST['gender'];
+    $lname = $_REQUEST['birthplace'];
+    $newtrainerStmt = "insert into TRAINERS values ('{$tid}', '{$tname}', '{$gender}', '{$lname}')";
+    executeSQL($newtrainerStmt);
+  }
+
+  //add new species
+  //TODO:add error message if species already exists, add constraints
+  if (array_key_exists('addspecies', $_POST)) {
+    $sname = $_REQUEST['sname'];
+    $postEvo = $_REQUEST['postEvo'];
+    $preEvo = $_REQUEST['preEvo'];
+    $type = $_REQUEST['type'];
+    $insertStmt = "insert into SPECIES values ('{$sname}', '{$postEvo}', '{$preEvo}', '{$type}')";
+    executeSQL($insertStmt);
+  }
+ //update Pokemon information
+ //TODO: add update constraint
+  if (array_key_exists('updatepokemon', $_POST)) {
+    $updatefield = $_REQUEST['updatefield'];
+    $updatevalue = $_REQUEST['newvalue'];
+    $pid = $_REQUEST['pid'];
+    $updateStmt = "update Pokemon set {$updatefield}='{$updatevalue}' where pokemonId='{$pid}'";
+    executeSQL($updateStmt);
+    echo "The {$updatefield} of the pokemon with id: {$pid} has been updated to {$updatevalue}";
+  }
+
+  $slist = "select sname, typeName from species order by sname";
   $sstmt = OCIParse($db_conn, $slist);
   OCIExecute($sstmt);
 
@@ -49,6 +125,15 @@ if ($db_conn) {
 
 OCILogoff($db_conn);
 OCICOMMIT($db_conn);
+
+// helper functions
+
+function executeSQL($cmdstring) {
+  //TODO: add error checking
+  global $db_conn;
+  $statement = OCIParse($db_conn, $cmdstring);
+  OCIExecute($statement);
+}
 
 function printResultAsTable2Columns($result, $columnName1, $columnName2) {
 	echo "<table>";

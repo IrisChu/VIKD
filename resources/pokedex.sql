@@ -36,7 +36,6 @@
     trainerId integer NOT NULL,
     FOREIGN KEY (trainerId) REFERENCES Trainers ON DELETE CASCADE);
 
-
   CREATE TABLE Pokemon
     (pokemonId integer PRIMARY KEY,
     sname varchar(20),
@@ -47,6 +46,9 @@
     FOREIGN KEY (locationName) REFERENCES Birthplace(locationName) ON DELETE CASCADE,
     FOREIGN KEY (trainerId) REFERENCES Trainers(trainerId) ON DELETE CASCADE,
     FOREIGN KEY (sname) REFERENCES Species(sname) ON DELETE CASCADE);
+
+/* whenever a new trainer is added, they receive a free pokeball
+  CREATE TRIGGER StarterPack*/
 
   insert into type
     values ('Fire', 'Water', 'Grass');
@@ -70,16 +72,25 @@
     values ('Azure Bay', 'Kalos');
 
   insert into Birthplace
+    values ('Lagoon Town', 'Kalos');
+
+  insert into Birthplace
     values ('Amity Square', 'Sinnoh');
+
+  insert into Birthplace
+    values ('Eterna City', 'Sinnoh');
 
   insert into Birthplace
     values ('Bell Tower', 'Hoenn');
 
   insert into Birthplace
-    values ('Five Island', 'Sevii Islands');
+    values ('Small Court', 'Unova');
 
   insert into Birthplace
-    values ('Small Court', 'Unova');
+    values ('Dreamyard', 'Unova');
+
+  insert into Birthplace
+    values ('Roshan City', 'Unova');
 
   insert into species
     values ('Pikachu', 'Raichu', NULL, 'Lightning');
@@ -109,7 +120,7 @@
     values (003, 'May', 'Female', 'Azure Bay');
 
   insert into trainers
-    values (004, 'Nate', 'Male', 'Bell Tower');
+    values (004, 'Nate', 'Male', 'Dreamyard');
 
   insert into trainers
     values (005, 'Helio', 'Male', 'Small Court');
@@ -163,16 +174,16 @@
     values (002, 'Charmander', 'Male', 'Dan', 'Bell Tower', 003);
 
   insert into pokemon
-    values (003, 'Charmander', 'Female', 'C', 'Five Island', 003);
+    values (003, 'Charmander', 'Female', 'C', 'Roshan City', 003);
 
   insert into pokemon
     values (004, 'Geodude', 'Male', 'H', 'Small Court', 001);
 
   insert into pokemon
-    values (005, 'Magikarp', 'Female', NULL, 'Five Island', NULL);
+    values (005, 'Magikarp', 'Female', NULL, 'Dreamyard', NULL);
 
   insert into pokemon
-    values (006, 'Scyther', 'Female', 'Dan Ryan', 'Five Island', 001);
+    values (006, 'Scyther', 'Female', 'Dan Ryan', 'Eterna City', 001);
 
   insert into pokemon
     values (007, 'Charmander', 'Female', 'MSI', 'Small Court', 001);

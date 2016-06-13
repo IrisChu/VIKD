@@ -103,13 +103,13 @@ if ($db_conn) {
 OCILogoff($db_conn);
 
 function printResult($result) {
-	echo "<div><table border='1' style='width:100%'>
+	echo "<div><table>
 		<tr>
-			<td><b> ID </b></td>
-			<td><b> Pokemon </b></td>
-			<td><b> Type </b></td>
-			<td><b> Gender </b></td>
-			<td><b> Location </b></td>
+			<th><b> ID </b></th>
+			<th><b> Pokemon </b></th>
+			<th><b> Type </b></th>
+			<th><b> Gender </b></th>
+			<th><b> Location </b></th>
 		</tr>";
 
 	while ($row = OCI_Fetch_Array($result, OCI_BOTH)) {

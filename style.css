@@ -59,7 +59,7 @@ body {
 
 .button {
 	border-radius: 8px;
-	background-color: #2aa6e6;
+	background-color: #1581b7;
 	color: white;
 	border: 1px solid grey;
 	font-weight: bold;
@@ -77,4 +77,24 @@ body {
 select, input:not([type='radio']) {
 	margin: 5px 0;
 	height: 1.5rem;
+}
+
+table {
+	margin-top: 1em;
+    border-collapse: collapse;
+    width: 100%;
+	border: 1px solid #bbb;
+}
+
+th, td {
+    text-align: left;
+    padding: 8px;
+	border-left: 1px dashed #aaa;
+}
+
+tr:nth-child(even){background-color: #e2e2e2}
+
+th {
+    background-color: #1581b7;
+    color: white;
 }

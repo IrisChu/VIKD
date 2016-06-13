@@ -65,7 +65,8 @@ function printTrainerInfo($result, $columnName, $trainerID) {
 
 function printResultAsTable1Column($result, $columnName) {
 	echo "<table>";
-
+	echo "<tr><th>" . $columnName . '</th></tr>';
+	
 	while ($row = OCI_Fetch_Array($result, OCI_BOTH)) {
 		echo "<tr><td>" . $row[$columnName] . "</td></tr>";
 	}

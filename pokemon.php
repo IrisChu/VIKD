@@ -1,5 +1,6 @@
 <html>
 <head>
+<script src="resources/jquery-3.0.0.js"></script>
 <script src="script.js"></script>
 <link href="style.css" rel="stylesheet">
 <title>VIKD</title>
@@ -31,6 +32,12 @@
 		</select>
 		<input class="button" type="submit" value="Go!" name="sortbysubmit">
 	</form>
+</div>
+
+<div>
+	<input type="submit" class="typebutton" name="typesubmit" value="Fire"></button>
+	<input type="submit" class="typebutton" name="typesubmit" value="Water"></button>
+	<input type="submit" class="typebutton" name="typesubmit" value="Grass"></button>
 </div>
 
 
@@ -71,6 +78,18 @@ if ($db_conn) {
 		OCICommit($db_conn);
 
 		echo "<p>The pokemon id submitted was: " . $_REQUEST['pokemonID'];
+	}
+	// Type Pressed
+	else if (isset($_POST['typename'])) {
+
+		$type = $__POST['typename'];
+		echo $type;
+
+		executeSQL("select p.pokemonid, p.sname, s.typename, p.gender, p.locationname
+			from pokemon p, species s
+			where p.sname = s.sname
+			and s.typename = '{$type}'");
+		OCICommit($db_conn);
 	}
 	// Default Show All
 	else {

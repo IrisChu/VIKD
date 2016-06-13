@@ -17,22 +17,71 @@
 
 
 	<form id="showall-container" method="post" action="pokemon.php">
-		<input class="button" type="submit" value="Show All" name="showallsubmit">
+		<input class="button" type="submit" name="showallsubmit" value="Show All"></button>
 	</form>
 
 	<form id="sortby-container" method="post" action="pokemon.php">
-		<select>
-			<option name="sortoption" value="pokemonid"> ID </option>
-			<option name="sortoption" value="sname"> Pokemon </option>
+		Sort By:
+		<select name="sortbyoption">
+			<option value="p.pokemonid"> ID </option>
+			<option value="p.sname"> Pokemon </option>
+			<option value="s.typename"> Type </option>
+			<option value="p.gender"> Gender </option>
+			<option value="p.locationname"> Location </option>
 		</select>
-		<input class="button" type="submit" value="Sort" name="sortby"
+		<input class="button" type="submit" value="Go!" name="sortbysubmit">
 	</form>
-
 </div>
 
 
 <?php
 $db_conn = OCILogon("ora_k7b8", "a73488090", "ug");
+
+if ($db_conn) {
+	// Show All Pressed
+	if (isset ($_POST['showallsubmit'])) {
+		executeSQL("select p.pokemonid, p.sname, s.typename, p.gender, p.locationname 
+  			from pokemon p, species s
+  			where p.sname = s.sname
+  			order by p.pokemonid asc");
+  		OCICommit($db_conn);
+	}
+	// Sort By Pressed
+	else if (isset ($_POST['sortbysubmit'])) {
+
+		$sortby = $_REQUEST['sortbyoption'];
+		$sortbyquery = "select p.pokemonid, p.sname, s.typename, p.gender, p.locationname
+		from pokemon p, species s
+		where p.sname = s.sname
+		order by {$sortby} asc";
+
+		executeSQL($sortbyquery);
+		OCICommit($db_conn);
+	}
+	// Search ID Pressed
+ 	else if (isset($_POST['pokemonIDsubmit'])) {
+		//Getting the values from user and insert data into the table
+		
+ 		$pokemonID = $_REQUEST['pokemonID'];
+ 		$searchquery = "select p.pokemonid, p.sname, s.typename, p.gender, p.locationname
+			from pokemon p, species s
+			where p.sname = s.sname and pokemonid = {$pokemonID}";
+
+		executeSQL($searchquery);
+		OCICommit($db_conn);
+
+		echo "<p>The pokemon id submitted was: " . $_REQUEST['pokemonID'];
+	}
+	// Default Show All
+	else {
+		executeSQL("select p.pokemonid, p.sname, s.typename, p.gender, p.locationname 
+  			from pokemon p, species s
+  			where p.sname = s.sname
+  			order by p.pokemonid asc");
+  		OCICommit($db_conn);
+	}
+}
+OCILogoff($db_conn);
 
 function printResult($result) {
 	echo "<div><table border='1' style='width:100%'>
@@ -51,10 +100,10 @@ function printResult($result) {
 					<td>" . $row['GENDER'] . "</td>
 					<td>" . $row['LOCATIONNAME'] . "</td></tr>";
 	}
-	echo "</table></div>";
+	echo "</table></div><br><br><br><br><br>";
 }
 
-function executePlainSQL($cmdstr) { //takes a plain (no bound variables) SQL command and executes it
+function executeSQL($cmdstr) { //takes a plain (no bound variables) SQL command and executes it
 	//echo "<br>running ".$cmdstr."<br>";
 	global $db_conn, $success;
 	$statement = OCIParse($db_conn, $cmdstr); //There is a set of comments at the end of the file that describe some of the OCI specific functions and how they work
@@ -78,86 +127,6 @@ function executePlainSQL($cmdstr) { //takes a plain (no bound variables) SQL com
 	printResult($statement);
 
 }
-
-function executeBoundSQL($cmdstr, $list) {
-	/* Sometimes a same statement will be excuted for severl times, only
-	 the value of variables need to be changed.
-	 In this case you don't need to create the statement several times; 
-	 using bind variables can make the statement be shared and just 
-	 parsed once. This is also very useful in protecting against SQL injection. See example code below for       how this functions is used */
-
-	global $db_conn, $success;
-	$statement = OCIParse($db_conn, $cmdstr);
-
-	if (!$statement) {
-		echo "<br>Cannot parse the following command: " . $cmdstr . "<br>";
-		$e = OCI_Error($db_conn);
-		echo htmlentities($e['message']);
-		$success = False;
-	}
-
-	foreach ($list as $tuple) {
-		foreach ($tuple as $bind => $val) {
-			//echo $val;
-			//echo "<br>".$bind."<br>";
-			OCIBindByName($statement, $bind, $val);
-			unset ($val); //make sure you do not remove this. Otherwise $val will remain in an array object wrapper which will not be recognized by Oracle as a proper datatype
-
-		}
-		$r = OCIExecute($statement, OCI_DEFAULT);
-		if (!$r) {
-			echo "<br>Cannot execute the following command: " . $cmdstr . "<br>";
-			$e = OCI_Error($statement); // For OCIExecute errors pass the statementhandle
-			echo htmlentities($e['message']);
-			echo "<br>";
-			$success = False;
-		}
-
-		printResult($statement);
-	}
-
-}
-
-if ($db_conn) {
-	if (array_key_exists('showallsubmit', $_POST)) {
-		executePlainSQL("select p.pokemonid, p.sname, s.typename, p.gender, p.locationname 
-  			from pokemon p, species s
-  			where p.sname = s.sname
-  			order by p.pokemonid asc");
-  		OCICommit($db_conn);
-	}
-	else if (array_key_exists('sortby', $_POST)) {
-
-		$tuple = array (
-			":bind1" => $_POST['sortoption']
-		);
-		$alltuples = array (
-			$tuple
-		);
-
-		executeBoundSQL("select p.pokemonid, p.sname, s.typename, p.gender, p.locationname 
-  			from pokemon p, species s
-  			where p.sname = s.sname
-  			order by :bind1 asc", $alltuples);
-		OCICommit($db_conn);
-	}
- 	else if (array_key_exists('pokemonIDsubmit', $_POST)) {
-		//Getting the values from user and insert data into the table
-		$tuple = array (
-			":bind1" => $_POST['pokemonID']
-		);
-		$alltuples = array (
-			$tuple
-		);
-		executeBoundSQL("select p.pokemonid, p.sname, s.typename, p.gender, p.locationname
-			from pokemon p, species s
-			where p.sname = s.sname and pokemonid = :bind1", $alltuples);
-		OCICommit($db_conn);
-
-		echo "<p>The pokemon id submitted was: " . $_REQUEST['pokemonID'];
-	}
-}
-OCILogoff($db_conn);
 
 ?>
 

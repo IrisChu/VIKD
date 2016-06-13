@@ -35,9 +35,12 @@
 </div>
 
 <div>
-	<input type="submit" class="typebutton" name="typesubmit" value="Fire"></button>
-	<input type="submit" class="typebutton" name="typesubmit" value="Water"></button>
-	<input type="submit" class="typebutton" name="typesubmit" value="Grass"></button>
+	<input type="submit" class="typebutton" value="Fire"></button>
+	<input type="submit" class="typebutton" value="Water"></button>
+	<input type="submit" class="typebutton" value="Grass"></button>
+	<input type="submit" class="typebutton" value="Lightning"></button>
+	<input type="submit" class="typebutton" value="Rock"></button>
+	<input type="submit" class="typebutton" value="Psychic"></button>
 </div>
 
 
@@ -82,8 +85,7 @@ if ($db_conn) {
 	// Type Pressed
 	else if (isset($_POST['typename'])) {
 
-		$type = $__POST['typename'];
-		echo $type;
+		$type = $_POST['typename'];
 
 		executeSQL("select p.pokemonid, p.sname, s.typename, p.gender, p.locationname
 			from pokemon p, species s

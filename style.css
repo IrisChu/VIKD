@@ -37,6 +37,14 @@ body {
 	background-color: #111;
 }
 
+#logout a{
+	background-color: #444!important;
+}
+
+#logout a:hover  {
+	background-color:  #555!important;
+}
+
 #container {
 	margin: 0 auto;
 	width: 60%;
@@ -65,3 +73,7 @@ body {
 .redirect {
 	cursor: pointer;
 }
+
+input {
+	margin: 5px;
+	}

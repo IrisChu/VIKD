@@ -1,23 +1,22 @@
 <?php
-
+	ini_set('session.save_path', 'session');
 	session_start();
 
 	$username = "admin";
 	$password = "admin";
 
 	if (isset($_SESSION['logged_in']) && $_SESSION['logged_in'] == true){
-		$_SESSION['logged_in'] = true;
-		header("Location: home.php");
+		$_SESSION['logged_in'] = false;
 	}
 
 	if (isset ($_POST['username']) && isset($_POST['password'])) {
 		if ($_POST['username'] == $username && $_POST['password'] == $password){
 			$_SESSION['logged_in'] = true;
-			header("Location: home.php");
+			header("Location: admin.php");
 		}
 	}
-	
 ?>
+
 <html>
 <head>
 <script src="script.js"></script>
@@ -26,8 +25,6 @@
 </head>
 <body id="container">
 <?php require('banner.php')?>
-
-
 
 <h1 class="header"> Administration Login Page</h1>
 

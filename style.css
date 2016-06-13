@@ -48,8 +48,8 @@ body {
 #container {
 	margin: 0 auto;
 	width: 60%;
-	min-height: 60rem;
 	padding: 0 2em;
+	margin-bottom: 5em;
 }
 
 #search-container {
@@ -74,6 +74,7 @@ body {
 	cursor: pointer;
 }
 
-input {
-	margin: 5px;
-	}
+select, input:not([type='radio']) {
+	margin: 5px 0;
+	height: 1.5rem;
+}

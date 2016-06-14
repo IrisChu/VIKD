@@ -32,6 +32,7 @@ if ($db_conn && isset($trainerID)) {
 	$itemName = 'ITEMNAME';
 	$itemCount = 'ITEMCOUNT';
 	$itemCost = 'COST';
+	$itemTotalCost = 'TOTALCOST';
 	$trainerTable = 'trainers';
 	$itemsTable = 'items';
 	$itemSqlStmt = "select {$itemName}, count(*) as {$itemCount} from {$trainerTable} natural inner join {$itemsTable} where TRAINERID = {$trainerID} group by {$itemName}";
@@ -42,10 +43,10 @@ if ($db_conn && isset($trainerID)) {
 	printResultAsTable2Columns($itemStatement, $itemName, $itemCount);
 	  
 	$itemCostSqlStmt = "
-		select unique {$itemName}, {$itemCost} 
+		select unique {$itemName}, {$itemCost}
 		from {$trainerTable} natural inner join {$itemsTable} 
 		where TRAINERID = {$trainerID} 
-		and {$itemCost} >= All(select {$itemCost} from {$itemsTable})
+		and {$itemCost} >= ALL(select {$itemCost} from {$itemsTable})
 	";
 	
 	$itemCostStatement = OCIParse($db_conn, $itemCostSqlStmt); 
@@ -53,8 +54,18 @@ if ($db_conn && isset($trainerID)) {
 	  
 	echo '<br> Your most expensive item is: ';
 	printResultAsTable2Columns($itemCostStatement, $itemName, $itemCost);
-	 
+	
+	$itemTotalCostSqlStmt = "
+		select sum({$itemCost}) AS {$itemTotalCost}
+		from ($trainerTable} natural inner join {$itemsTable}
+		where TRAINERID = {$trainerID}
+		";
+	$itemTotalCostStatement = OCIParse($db_conn, $itemTotalCostSqlStmt); 
+	OCIExecute($itemTotalCostStatement);
 	  
+	echo '<br> Total cost of all items: ';
+	printResultAsTable1Column($itemTotalCostStatement, $itemTotalCost);
+
 	//get pokemon info
 	$pokemonSqlStmt = "select * from {$trainerTable}, pokemon where {$trainerTable}.TRAINERID = pokemon.TRAINERID and {$trainerTable}.TRAINERID = " . $trainerID;
 	$pokemonStatement = OCIParse($db_conn, $pokemonSqlStmt); 

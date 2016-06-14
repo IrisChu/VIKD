@@ -1,5 +1,67 @@
+/* POKEMON Page
+	JOIN QUERY: Show All Pokemon */
+	 SELECT p.pokemonID, p.sname, s.typeName, p.gender, p.locationName
+	 FROM Pokemon p, Species s
+	 WHERE p.sname = s.sname
+	 ORDER BY p.pokemonID ASC;
 
-/* Administration Page Queries*/
+/* POKEMON Page
+	JOIN QUERY: Sort By {Attribute} */
+	 SELECT p.pokemonID, p.sname, s.typeName, p.gender, p.locationName
+	 FROM Pokemon p, Species s
+	 WHERE p.sname = s.sname
+	 ORDER BY {$sortbyoption} ASC;
+
+/* POKEMON Page
+	JOIN QUERY: Search By PokemonID */
+	 SELECT p.pokemonID, p.sname, s.typeName, p.gender, p.locationName
+	 FROM Pokemon p, Species s
+	 WHERE p.sname = s.sname AND p.pokemonID = {$pokemonID};
+
+/* POKEMON Page
+	JOIN QUERY: Sort by Type */
+	 SELECT p.pokemonID, p.sname, s.typeName, p.gender, p.locationName
+	 FROM Pokemon p, Species s
+	 WHERE p.sname = s.sname AND s.typeName = {$typepressed};
+
+
+/* TRAINER Page
+	Select * from trainers */
+
+	SELECT *
+	FROM TRAINERS
+	WHERE trainerId = {$trainerId};
+
+/* TRAINER Page
+	AGGREGATION: Show the quantity of each item that a trainer owns */
+
+	SELECT {$itemName}, count(*) AS {$ItemCount}
+	FROM {$TrainerTable} INNER JOIN {$itemsTable}
+	WHERE trainerId = {$trainerId};
+
+/* TRAINER Page
+	Show the most expensive item a trainer owns */
+
+	SELECT unique {$itemName}, {$itemCost}
+	FROM {$TrainerTable} INNER JOIN {$itemsTable}
+	WHERE trainerId = {$trainerId} AND {$itemCost} >= ALL(select {$itemCost} from {$itemsTable});
+
+/* TRAINER Page
+	AGGREGATION: Show total cost of items for a trainer */
+
+	SELECT SUM({$itemCost})
+	FROM {$TrainerTable} INNER JOIN {$itemsTable}
+	WHERE trainerId = {$trainerId};
+
+/* TRAINER Page
+	JOIN: Show Pokemon info for a trainer */
+
+	SELECT *
+	FROM {$TrainerTable}, pokemon
+	WHERE {$trainerTable}.trainerId = pokemon.trainerId AND {trainerTable}.trainerId = {$trainerId};
+
+/* ADMIN Page
+   DIVISION QUERY: Find trainers that own at least one pokemon of each type */
 
 SELECT distinct t.trainerName
 FROM Trainers t, Pokemon p, Species s, Type type
@@ -16,6 +78,7 @@ WHERE t.trainerId = p.trainerId
 					AND p1.sname = s1.sname
 					AND s1.typeName = type1.typeName
 					AND t.trainerId = t1.trainerId));
+
 
 
 SELECT region, count(*) as POKEMONPOP
@@ -55,14 +118,16 @@ GROUP BY trainerName, itemName
 ORDER BY trainerName;
 
 
-/* Trainers Page Queries */
-CREATE VIEW pokemon_in_area AS
+/* POKEMON PAGE
+	NESTED AGGREGATION: Find locations with more trainers than pokemon */
+
+CREATE VIEW trainer_in_area AS
 (SELECT b.locationName, count(trainerId) AS TRAINERCOUNT
 			 FROM Birthplace b, Trainers t
 		 	 WHERE b.locationName = t.locationName
 			 GROUP BY b.locationName);
 
-CREATE VIEW trainer_in_area AS
+CREATE VIEW pokemon_in_area AS
 (SELECT b.locationName, count(pokemonID) AS POKEMONCOUNT
 		 	 FROM Birthplace b, Pokemon p
 		   WHERE b.locationName = p.locationName
@@ -71,3 +136,7 @@ CREATE VIEW trainer_in_area AS
 SELECT locationName
 FROM trainer_in_area NATURAL FULL OUTER JOIN pokemon_in_area
 WHERE POKEMONCOUNT > TRAINERCOUNT;
+
+/* ADMIN PAGE
+	NESTED AGGREGATION: Number of Trainers with More than 3 Pokemon (Trainers who can battle each other) */
+

@@ -28,24 +28,41 @@ if ($db_conn && isset($trainerID)) {
   $trainerExists = printTrainerInfo($trainerStatement, $columnName, $trainerID);
   
   if($trainerExists) {
-	  //get item info
-	  $itemName = 'ITEMNAME';
-	  $itemCount = 'ITEMCOUNT';
-	  $itemSqlStmt = "select {$itemName}, count(*) as {$itemCount} from trainers natural inner join items where TRAINERID = {$trainerID} group by {$itemName}";
-	  $itemStatement = OCIParse($db_conn, $itemSqlStmt); 
-	  OCIExecute($itemStatement);
+	//get item info
+	$itemName = 'ITEMNAME';
+	$itemCount = 'ITEMCOUNT';
+	$itemCost = 'COST';
+	$trainerTable = 'trainers';
+	$itemsTable = 'items';
+	$itemSqlStmt = "select {$itemName}, count(*) as {$itemCount} from {$trainerTable} natural inner join {$itemsTable} where TRAINERID = {$trainerID} group by {$itemName}";
+	$itemStatement = OCIParse($db_conn, $itemSqlStmt); 
+	OCIExecute($itemStatement);
+
+	echo '<h2>Item List</h2>';
+	printResultAsTable2Columns($itemStatement, $itemName, $itemCount);
+	  
+	$itemCostSqlStmt = "
+		select unique {$itemName}, {$itemCost} 
+		from {$trainerTable} natural inner join {$itemsTable} 
+		where TRAINERID = {$trainerID} 
+		and {$itemCost} >= All(select {$itemCost} from {$itemsTable})
+	";
+	
+	$itemCostStatement = OCIParse($db_conn, $itemCostSqlStmt); 
+	OCIExecute($itemCostStatement);
+	  
+	echo '<br> Your most expensive item is: ';
+	printResultAsTable2Columns($itemCostStatement, $itemName, $itemCost);
 	 
-	  echo '<h2>Item List</h2>';
-	  printResultAsTable2Columns($itemStatement, $itemName, $itemCount);
 	  
-	  //get pokemon info
-	  $pokemonSqlStmt = "select * from trainers, pokemon where trainers.TRAINERID = pokemon.TRAINERID and trainers.TRAINERID = " . $trainerID;
-	  $pokemonStatement = OCIParse($db_conn, $pokemonSqlStmt); 
-	  OCIExecute($pokemonStatement);
+	//get pokemon info
+	$pokemonSqlStmt = "select * from {$trainerTable}, pokemon where {$trainerTable}.TRAINERID = pokemon.TRAINERID and {$trainerTable}.TRAINERID = " . $trainerID;
+	$pokemonStatement = OCIParse($db_conn, $pokemonSqlStmt); 
+	OCIExecute($pokemonStatement);
 	  
-	  $pokemonName = 'POKEMONNAME';
-	  echo '<h2>Pokemon List</h2>';
-	  printResultAsTable1Column($pokemonStatement, $pokemonName);
+	$pokemonName = 'POKEMONNAME';
+	echo '<h2>Pokemon List</h2>';
+	printResultAsTable1Column($pokemonStatement, $pokemonName);
   }
 }
 OCILogoff($db_conn);
@@ -78,7 +95,7 @@ function printResultAsTable2Columns($result, $columnName1, $columnName2) {
 	echo "<tr><th>" . $columnName1 . '</th><th>' . $columnName2 ."</th></tr>";
 	
 	while ($row = OCI_Fetch_Array($result, OCI_BOTH)) {
-		echo '<tr><td>' . $row[$columnName1] . '</td><td>'. $row[$columnName2] .'</td></tr>';
+		echo '<tr><td class="twoCol">' . $row[$columnName1] . '</td><td class="twoCol">'. $row[$columnName2] .'</td></tr>';
 	}
 	echo "</table>";
 }

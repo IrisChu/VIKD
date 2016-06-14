@@ -53,7 +53,7 @@ if ($db_conn) {
 		executeSQL("select p.pokemonid, p.sname, s.typename, p.gender, p.locationname 
   			from pokemon p, species s
   			where p.sname = s.sname
-  			order by p.pokemonid asc");
+  			order by p.pokemonid asc", "printResult");
   		OCICommit($db_conn);
 	}
 	// Sort By Pressed
@@ -65,7 +65,7 @@ if ($db_conn) {
 		where p.sname = s.sname
 		order by {$sortby} asc";
 
-		executeSQL($sortbyquery);
+		executeSQL($sortbyquery, "printResult");
 		OCICommit($db_conn);
 	}
 	// Search ID Pressed
@@ -77,7 +77,7 @@ if ($db_conn) {
 			from pokemon p, species s
 			where p.sname = s.sname and pokemonid = {$pokemonID}";
 
-		executeSQL($searchquery);
+		executeSQL($searchquery, "printResult");
 		OCICommit($db_conn);
 
 		echo "<p>The pokemon id submitted was: " . $_REQUEST['pokemonID'];
@@ -87,10 +87,10 @@ if ($db_conn) {
 
 		$type = $_POST['typename'];
 
-		executeSQL("select p.pokemonid, p.sname, s.typename, p.gender, p.locationname
-			from pokemon p, species s
-			where p.sname = s.sname
-			and s.typename = '{$type}'");
+		executeSQL("select distinct s.sname, s.preevo, s.postevo, s.typename, t.strength, t.weakness
+			from species s, type t
+			where s.typename = t.typename
+			and s.typename = '{$type}'", "printType");
 		OCICommit($db_conn);
 	}
 	// Default Show All
@@ -98,7 +98,7 @@ if ($db_conn) {
 		executeSQL("select p.pokemonid, p.sname, s.typename, p.gender, p.locationname 
   			from pokemon p, species s
   			where p.sname = s.sname
-  			order by p.pokemonid asc");
+  			order by p.pokemonid asc", "printResult");
   		OCICommit($db_conn);
 	}
 }
@@ -124,7 +124,29 @@ function printResult($result) {
 	echo "</table></div><br><br><br><br><br>";
 }
 
-function executeSQL($cmdstr) { //takes a plain (no bound variables) SQL command and executes it
+function printType($result) {
+	echo "<div><table>
+		<tr>
+			<th><b> Pokemon </b></th>
+			<th><b> Pre Evolution </b></th>
+			<th><b> Post Evolution </b></th>
+			<th><b> Type </b></th>
+			<th><b> Strengths </b></th>
+			<th><b> Weaknesses </b></th>
+		</tr>";
+
+	while ($row = OCI_Fetch_Array($result, OCI_BOTH)) {
+		echo "<tr><td>" . $row['SNAME'] . "</td>
+					<td>" . $row['PREEVO'] . "</td>
+					<td>" . $row['POSTEVO'] . "</td>
+					<td>" . $row['TYPENAME'] . "</td>
+					<td>" . $row['STRENGTH'] . "</td>
+					<td>" . $row['WEAKNESS'] . "</td></tr>";
+	}
+	echo "</table></div><br><br><br><br><br>";
+}
+
+function executeSQL($cmdstr, $print) { //takes a plain (no bound variables) SQL command and executes it
 	//echo "<br>running ".$cmdstr."<br>";
 	global $db_conn, $success;
 	$statement = OCIParse($db_conn, $cmdstr); //There is a set of comments at the end of the file that describe some of the OCI specific functions and how they work
@@ -145,7 +167,11 @@ function executeSQL($cmdstr) { //takes a plain (no bound variables) SQL command 
 		$success = False;
 	}
 
-	printResult($statement);
+	if ($print == "printType"){
+		printType($statement);
+	} else {	
+		printResult($statement);
+	}
 
 }
 

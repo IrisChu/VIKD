@@ -99,19 +99,19 @@
     values ('Pikachu', 'Raichu', NULL, 'Electric');
 
   insert into species
-    values ('Charmander', NULL, 'Charmeleon', 'Fire');
+    values ('Charmander', 'Charmeleon', NULL, 'Fire');
 
   insert into species
-    values ('Geodude', NULL, 'Graveler', 'Rock');
+    values ('Geodude', 'Graveler', NULL, 'Rock');
 
   insert into species
-    values ('Magikarp', NULL, 'Gyarados', 'Water');
+    values ('Magikarp', 'Gyarados', NULL, 'Water');
 
   insert into species
-    values ('Haunter', 'Ghastly', 'Gengar', 'Psychic');
+    values ('Haunter', 'Gengar', 'Ghastly', 'Psychic');
 
   insert into species
-    values ('Scyther', 'Scizor', NULL, 'Grass');
+    values ('Scyther',  'Scizor', NULL,'Grass');
 
   insert into trainers
     values (001, 'Red', 'Male', 'Azure Bay');

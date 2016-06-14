@@ -19,19 +19,19 @@
     postEvo varchar(20),
     preEvo varchar(20),
     typeName varchar(20),
-    FOREIGN KEY (typeName) REFERENCES Type(typeName) ON DELETE CASCADE);
+    FOREIGN KEY (typeName) REFERENCES Type(typeName));
 
   CREATE TABLE Trainers
     (trainerId integer PRIMARY KEY,
     trainerName varchar(30),
     gender varchar(10),
     locationName varchar(30) NOT NULL,
-    FOREIGN KEY (locationName) REFERENCES Birthplace(locationName)
-    ON DELETE CASCADE);
+    FOREIGN KEY (locationName) REFERENCES Birthplace(locationName));
 
   CREATE TABLE Items
     (itemId integer PRIMARY KEY,
     itemName varchar(20),
+    cost integer,
     trainerId integer NOT NULL,
     FOREIGN KEY (trainerId) REFERENCES Trainers ON DELETE CASCADE);
 
@@ -42,16 +42,9 @@
     pokemonName varchar(20),
     locationName varchar(30) NOT NULL,
     trainerId integer,
-    FOREIGN KEY (locationName) REFERENCES Birthplace(locationName) ON DELETE CASCADE,
+    FOREIGN KEY (locationName) REFERENCES Birthplace(locationName),
     FOREIGN KEY (trainerId) REFERENCES Trainers(trainerId) ON DELETE SET NULL,
-    FOREIGN KEY (sname) REFERENCES Species(sname))
-    CHECK (NOT EXISTS (SELECT pokemonName
-                      FROM POKEMON
-                      WHERE trainerId is NULL));
-
-
-/* whenever a new trainer is added, they receive a free pokeball
-  CREATE TRIGGER StarterPack*/
+    FOREIGN KEY (sname) REFERENCES Species(sname));
 
   insert into type
     values ('Fire', 'Water', 'Grass');
@@ -63,10 +56,10 @@
     values ('Grass', 'Fire', 'Water');
 
   insert into type
-    values ('Electric', 'Grass' ,'Water');
+    values ('Lightning', 'Grass' ,'Water');
 
   insert into type
-    values ('Water', 'Lighning', 'Fire');
+    values ('Water', 'Lightning', 'Fire');
 
   insert into type
     values ('Rock', 'Ground', 'Fire');
@@ -96,7 +89,7 @@
     values ('Roshan City', 'Unova');
 
   insert into species
-    values ('Pikachu', 'Raichu', NULL, 'Electric');
+    values ('Pikachu', 'Raichu', NULL, 'Lightning');
 
   insert into species
     values ('Charmander', 'Charmeleon', NULL, 'Fire');
@@ -129,46 +122,46 @@
     values (005, 'Helio', 'Male', 'Small Court');
 
   insert into Items
-    values (001, 'Adamant Orb', 001);
+    values (001, 'Adamant Orb', 500, 001);
 
   insert into Items
-    values (002, 'Cheri Berry', 005);
+    values (002, 'Cheri Berry', 30, 005);
 
   insert into Items
-    values (003, 'Lava Cookie', 003);
+    values (003, 'Lava Cookie', 50, 003);
 
   insert into Items
-    values (004, 'Love Ball', 001);
+    values (004, 'Love Ball', 400, 001);
 
   insert into Items
-    values (005, 'Potion', 002);
+    values (005, 'Potion', 100, 002);
 
   insert into Items
-    values (006, 'Love Ball', 001);
+    values (006, 'Love Ball', 400, 001);
 
   insert into Items
-    values (007, 'Poke Ball', 004);
+    values (007, 'Poke Ball', 200, 004);
 
   insert into Items
-    values (008, 'Grass Ball', 005);
+    values (008, 'Grass Ball', 500, 005);
 
   insert into Items
-    values (009, 'Love Ball', 005);
+    values (009, 'Love Ball', 400, 005);
 
   insert into Items
-    values (010, 'Poke Ball', 003);
+    values (010, 'Poke Ball', 200, 003);
 
   insert into Items
-    values (011, 'Master Ball', 001);
+    values (011, 'Master Ball', 800, 001);
 
   insert into Items
-    values (012, 'Master Ball', 004);
+    values (012, 'Master Ball', 800, 004);
 
   insert into Items
-    values (013, 'Ultra Ball', 001);
+    values (013, 'Ultra Ball', 700, 001);
 
   insert into Items
-    values (014, 'Ultra Ball', 001);
+    values (014, 'Ultra Ball', 700, 001);
 
   insert into pokemon
     values (001, 'Pikachu', 'Female', 'Ryan', 'Azure Bay', 002);
@@ -180,13 +173,13 @@
     values (003, 'Charmander', 'Female', 'Chan', 'Roshan City', 003);
 
   insert into pokemon
-    values (004, 'Geodude', 'Male', 'Hodor', 'Small Court', 001);
+    values (004, 'Geodude', 'Male', 'Hann', 'Small Court', 001);
 
   insert into pokemon
     values (005, 'Magikarp', 'Female', NULL, 'Dreamyard', NULL);
 
   insert into pokemon
-    values (006, 'Scyther', 'Female', 'Daniella', 'Eterna City', 001);
+    values (006, 'Scyther', 'Female', 'Dany', 'Eterna City', 001);
 
   insert into pokemon
     values (007, 'Charmander', 'Female', 'Char', 'Small Court', 001);

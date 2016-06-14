@@ -1,6 +1,5 @@
 
-/* POKEMON Page
-   DIVISION QUERY: Find trainers that own at least one pokemon of each type */
+/* Administration Page Queries*/
 
 SELECT distinct t.trainerName
 FROM Trainers t, Pokemon p, Species s, Type type
@@ -19,8 +18,35 @@ WHERE t.trainerId = p.trainerId
 					AND t.trainerId = t1.trainerId));
 
 
-/* ADMINISTRATION Page
-   AGGREGATION QUERY: Find the number of each type of pokeball owned by each trainer*/
+SELECT region, count(*) as POKEMONPOP
+FROM Birthplace b, Pokemon p
+WHERE b.locationName = p.locationName
+GROUP BY region
+ORDER BY POKEMONPOP DESC;
+
+SELECT region, count(*) AS TrainerNumber
+FROM Birthplace b, Trainers t
+WHERE b.locationName = t.locationName
+GROUP BY region
+ORDER BY TrainerNumber desc;
+
+update Pokemon set {$updatefield}='{$updatevalue}' where pokemonId='{$pid}');
+
+insert into SPECIES values ('{$sname}', '{$postEvo}', '{$preEvo}', '{$type}');
+
+insert into TRAINERS values ('{$tid}', '{$tname}', '{$gender}', '{$lname}');
+
+insert into POKEMON values ('{$pid}', '{$species}', '{$gender}', '{$name}', '{$location}', '{$tid}');
+
+delete from POKEMON where pokemonId='{$pid}';
+
+delete from SPECIES where sname='{$sname}';
+
+delete from TRAINERS where trainerId = '{$tid}';
+
+
+
+/*Pokemon Page Queries */
 
 SELECT trainerName, itemName as Poke_Ball, count(itemName) as Number_of_Balls
 FROM Trainers t, Items i
@@ -29,9 +55,7 @@ GROUP BY trainerName, itemName
 ORDER BY trainerName;
 
 
-/* TRAINERS PAGE
-	NESTED AGGREGATION: Find locations with more trainers than pokemon */
-
+/* Trainers Page Queries */
 CREATE VIEW pokemon_in_area AS
 (SELECT b.locationName, count(trainerId) AS TRAINERCOUNT
 			 FROM Birthplace b, Trainers t

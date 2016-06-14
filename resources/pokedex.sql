@@ -32,7 +32,6 @@
   CREATE TABLE Items
     (itemId integer PRIMARY KEY,
     itemName varchar(20),
-    cost integer,
     trainerId integer NOT NULL,
     FOREIGN KEY (trainerId) REFERENCES Trainers ON DELETE CASCADE);
 
@@ -44,8 +43,12 @@
     locationName varchar(30) NOT NULL,
     trainerId integer,
     FOREIGN KEY (locationName) REFERENCES Birthplace(locationName) ON DELETE CASCADE,
-    FOREIGN KEY (trainerId) REFERENCES Trainers(trainerId) ON DELETE CASCADE,
-    FOREIGN KEY (sname) REFERENCES Species(sname) ON DELETE CASCADE);
+    FOREIGN KEY (trainerId) REFERENCES Trainers(trainerId) ON DELETE SET NULL,
+    FOREIGN KEY (sname) REFERENCES Species(sname))
+    CHECK (NOT EXISTS (SELECT pokemonName
+                      FROM POKEMON
+                      WHERE trainerId is NULL));
+
 
 /* whenever a new trainer is added, they receive a free pokeball
   CREATE TRIGGER StarterPack*/
@@ -60,7 +63,7 @@
     values ('Grass', 'Fire', 'Water');
 
   insert into type
-    values ('Lightning', 'Grass' ,'Water');
+    values ('Electric', 'Grass' ,'Water');
 
   insert into type
     values ('Water', 'Lighning', 'Fire');
@@ -93,7 +96,7 @@
     values ('Roshan City', 'Unova');
 
   insert into species
-    values ('Pikachu', 'Raichu', NULL, 'Lightning');
+    values ('Pikachu', 'Raichu', NULL, 'Electric');
 
   insert into species
     values ('Charmander', NULL, 'Charmeleon', 'Fire');
@@ -126,46 +129,46 @@
     values (005, 'Helio', 'Male', 'Small Court');
 
   insert into Items
-    values (001, 'Adamant Orb', 1000, 001);
+    values (001, 'Adamant Orb', 001);
 
   insert into Items
-    values (002, 'Cheri Berry', 20, 005);
+    values (002, 'Cheri Berry', 005);
 
   insert into Items
-    values (003, 'Lava Cookie', 300, 003);
+    values (003, 'Lava Cookie', 003);
 
   insert into Items
-    values (004, 'Love Ball', 500, 001);
+    values (004, 'Love Ball', 001);
 
   insert into Items
-    values (005, 'Potion', 850, 002);
+    values (005, 'Potion', 002);
 
   insert into Items
-    values (006, 'Love Ball', 500, 001);
+    values (006, 'Love Ball', 001);
 
   insert into Items
-    values (007, 'Poke Ball', 200, 004);
+    values (007, 'Poke Ball', 004);
 
   insert into Items
-    values (008, 'Grass Ball', 400, 005);
+    values (008, 'Grass Ball', 005);
 
   insert into Items
-    values (009, 'Love Ball', 500, 005);
+    values (009, 'Love Ball', 005);
 
   insert into Items
-    values (010, 'Poke Ball', 200, 003);
+    values (010, 'Poke Ball', 003);
 
   insert into Items
-    values (011, 'Master Ball', 800, 001);
+    values (011, 'Master Ball', 001);
 
   insert into Items
-    values (012, 'Master Ball', 800, 004);
+    values (012, 'Master Ball', 004);
 
   insert into Items
-    values (013, 'Ultra Ball', 700, 001);
+    values (013, 'Ultra Ball', 001);
 
   insert into Items
-    values (014, 'Ultra Ball', 700, 001);
+    values (014, 'Ultra Ball', 001);
 
   insert into pokemon
     values (001, 'Pikachu', 'Female', 'Ryan', 'Azure Bay', 002);
@@ -174,25 +177,25 @@
     values (002, 'Charmander', 'Male', 'Dan', 'Bell Tower', 003);
 
   insert into pokemon
-    values (003, 'Charmander', 'Female', 'C', 'Roshan City', 003);
+    values (003, 'Charmander', 'Female', 'Chan', 'Roshan City', 003);
 
   insert into pokemon
-    values (004, 'Geodude', 'Male', 'H', 'Small Court', 001);
+    values (004, 'Geodude', 'Male', 'Hodor', 'Small Court', 001);
 
   insert into pokemon
     values (005, 'Magikarp', 'Female', NULL, 'Dreamyard', NULL);
 
   insert into pokemon
-    values (006, 'Scyther', 'Female', 'Dan Ryan', 'Eterna City', 001);
+    values (006, 'Scyther', 'Female', 'Daniella', 'Eterna City', 001);
 
   insert into pokemon
-    values (007, 'Charmander', 'Female', 'MSI', 'Small Court', 001);
+    values (007, 'Charmander', 'Female', 'Char', 'Small Court', 001);
 
   insert into pokemon
-    values (008, 'Pikachu', 'Male', 'T', 'Bell Tower', 001);
+    values (008, 'Pikachu', 'Male', 'Timothy', 'Bell Tower', 001);
 
   insert into pokemon
-    values (009, 'Magikarp', 'Female', 'Dan', 'Azure Bay', 001);
+    values (009, 'Magikarp', 'Female', 'Amy', 'Azure Bay', 001);
 
   insert into pokemon
     values (010, 'Haunter', 'Male', 'Ryan', 'Small Court', 001);

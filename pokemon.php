@@ -34,14 +34,14 @@
 	</form>
 </div>
 
-<div>
-	<input type="submit" class="typebutton" value="Fire"></button>
-	<input type="submit" class="typebutton" value="Water"></button>
-	<input type="submit" class="typebutton" value="Grass"></button>
-	<input type="submit" class="typebutton" value="Lightning"></button>
-	<input type="submit" class="typebutton" value="Rock"></button>
-	<input type="submit" class="typebutton" value="Psychic"></button>
-</div>
+<form method="post" action="pokemon.php">
+	<input type="submit" class="typebutton" value="Fire" name="typename"></button>
+	<input type="submit" class="typebutton" value="Water" name="typename"></button>
+	<input type="submit" class="typebutton" value="Grass" name="typename"></button>
+	<input type="submit" class="typebutton" value="Lightning" name="typename"></button>
+	<input type="submit" class="typebutton" value="Rock" name="typename"></button>
+	<input type="submit" class="typebutton" value="Psychic" name="typename"></button>
+</form>
 
 
 <?php

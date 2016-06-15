@@ -19,7 +19,8 @@
     Display the number of trainers who can battle (Have more than 1 Pokemon):
     <input class="button" type="submit" value="Go!" name="battlecount"> <br>
     Display the total item cost of each trainer who can battle (Have more than 1 Pokemon):
-    <input class="button" type="submit" value="Go!" name="battlecost"> <br>
+    <input class="button" type="submit" value="Total" name="battlecost"> 
+    <input class="button" type="submit" value="Average" name="battlecost1"> <br>
   </form>
 <?php
 $db_conn = OCILogon("ora_k7b8", "a73488090", "ug");
@@ -153,7 +154,21 @@ if ($db_conn) {
     $stats = executeSQL($battlecostStmt);
     printResultAsTable2Columns($stats, 'Trainer Name', 'Total Item Cost');
   }
-
+    if (array_key_exists('battlecost1', $_POST)) {
+    $battlecost1Stmt = " 
+    SELECT t.trainerName, avg(cost) AS BATTLECOST1
+    FROM Trainers t, Items i
+    WHERE t.trainerId = i.trainerId AND EXISTS 
+      (SELECT p.trainerID, count(*) 
+        FROM Pokemon p 
+        WHERE p.trainerID = t.trainerID 
+        GROUP BY p.trainerID 
+        HAVING count(*) > 1)
+    GROUP BY t.trainerName";
+    
+    $stats = executeSQL($battlecost1Stmt);
+    printResultAsTable2Columns($stats, 'Trainer Name', 'Average Item Cost');
+  }
   $slistStmt = "select sname, typeName from species order by sname";
   $sstmt = executeSQL($slistStmt);
   echo '<h2>Species List</h2>';

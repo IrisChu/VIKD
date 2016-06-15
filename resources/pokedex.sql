@@ -44,7 +44,8 @@
     trainerId integer,
     FOREIGN KEY (locationName) REFERENCES Birthplace(locationName),
     FOREIGN KEY (trainerId) REFERENCES Trainers(trainerId) ON DELETE SET NULL,
-    FOREIGN KEY (sname) REFERENCES Species(sname));
+    FOREIGN KEY (sname) REFERENCES Species(sname),
+    CHECK (sname<>pokemonName));
 
   insert into type
     values ('Fire', 'Water', 'Grass');

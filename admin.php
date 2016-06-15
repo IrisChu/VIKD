@@ -16,6 +16,10 @@
     <input class="button" type="submit" value="Go!" name="regionpop"> <br>
     Display the areas that are most populated with Pokemon:
     <input class="button" type="submit" value="Go!" name="pokemonpop"> <br>
+    Display the number of trainers who can battle (Have more than 1 Pokemon):
+    <input class="button" type="submit" value="Go!" name="battlecount"> <br>
+    Display the total item cost of each trainer who can battle (Have more than 1 Pokemon):
+    <input class="button" type="submit" value="Go!" name="battlecost"> <br>
   </form>
 <?php
 $db_conn = OCILogon("ora_k7b8", "a73488090", "ug");
@@ -81,18 +85,18 @@ if ($db_conn) {
   SELECT distinct t.trainerName
   FROM Trainers t, Pokemon p, Species s, Type type
   WHERE t.trainerId = p.trainerId
-		AND p.sname = s.sname
-		AND s.typeName = type.typeName
-		AND NOT EXISTS
-		((SELECT type.typeName
-			FROM Type)
-			MINUS
-			(SELECT type1.typeName
-			FROM Trainers t1, Pokemon p1, Species s1, Type type1
-			WHERE t1.trainerId = p1.trainerId
-					AND p1.sname = s1.sname
-					AND s1.typeName = type1.typeName
-					AND t.trainerId = t1.trainerId))";
+    AND p.sname = s.sname
+    AND s.typeName = type.typeName
+    AND NOT EXISTS
+    ((SELECT type.typeName
+      FROM Type)
+      MINUS
+      (SELECT type1.typeName
+      FROM Trainers t1, Pokemon p1, Species s1, Type type1
+      WHERE t1.trainerId = p1.trainerId
+          AND p1.sname = s1.sname
+          AND s1.typeName = type1.typeName
+          AND t.trainerId = t1.trainerId))";
   $stats = executeSQL($oneofeachStmt);
   printResultAsTable1Column($stats, "Trainer Name");
   }
@@ -118,6 +122,36 @@ if ($db_conn) {
 
     $stats = executeSQL($pokemonpopStmt);
     printResultAsTable2Columns($stats, 'Region', 'Pokemon Population');
+  }
+  if (array_key_exists('battlecount', $_POST)) {
+    $battlecountStmt = " 
+    SELECT count(*) AS BATTLECOUNT
+    FROM Trainers t
+    WHERE EXISTS 
+      (SELECT p.trainerID, count(*) 
+        FROM Pokemon p 
+        WHERE p.trainerID = t.trainerID 
+        GROUP BY p.trainerID 
+        HAVING count(*) > 1)";
+    
+    $stats = executeSQL($battlecountStmt);
+    printResultAsTable1Column($stats, 'Trainer Count');
+  }
+
+   if (array_key_exists('battlecost', $_POST)) {
+    $battlecostStmt = " 
+    SELECT t.trainerName, sum(cost) AS BATTLECOST
+    FROM Trainers t, Items i
+    WHERE t.trainerId = i.trainerId AND EXISTS 
+      (SELECT p.trainerID, count(*) 
+        FROM Pokemon p 
+        WHERE p.trainerID = t.trainerID 
+        GROUP BY p.trainerID 
+        HAVING count(*) > 1)
+    GROUP BY t.trainerName";
+    
+    $stats = executeSQL($battlecostStmt);
+    printResultAsTable2Columns($stats, 'Trainer Name', 'Total Item Cost');
   }
 
   $slistStmt = "select sname, typeName from species order by sname";
@@ -160,23 +194,23 @@ function executeSQLwithmessage($cmdstring, $message) {
 }
 
 function printResultAsTable1Column($result, $columnName) {
-	echo "<table>";
-	echo "<tr><th>" . $columnName . '</th></tr>';
+  echo "<table>";
+  echo "<tr><th>" . $columnName . '</th></tr>';
 
-	while ($row = OCI_Fetch_Array($result, OCI_BOTH)) {
-		echo "<tr><td>" . $row[0] . "</td></tr>";
-	}
-	echo "</table>";
+  while ($row = OCI_Fetch_Array($result, OCI_BOTH)) {
+    echo "<tr><td>" . $row[0] . "</td></tr>";
+  }
+  echo "</table>";
 }
 
 
 function printResultAsTable2Columns($result, $columnName1, $columnName2) {
-	echo "<table>";
-	echo "<tr><th>" . $columnName1 . '</th><th>' . $columnName2 ."</th></tr>";
-	while ($row = OCI_Fetch_Array($result, OCI_BOTH)) {
-		echo '<tr><td>' . $row[0] . '</td><td>'. $row[1] .'</td></tr>';
-	}
-	echo "</table>";
+  echo "<table>";
+  echo "<tr><th>" . $columnName1 . '</th><th>' . $columnName2 ."</th></tr>";
+  while ($row = OCI_Fetch_Array($result, OCI_BOTH)) {
+    echo '<tr><td>' . $row[0] . '</td><td>'. $row[1] .'</td></tr>';
+  }
+  echo "</table>";
 }
 ?>
 <br><br>

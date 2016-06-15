@@ -118,25 +118,17 @@ GROUP BY trainerName, itemName
 ORDER BY trainerName;
 
 
-/* POKEMON PAGE
-	NESTED AGGREGATION: Find locations with more trainers than pokemon */
+/* ADMIN PAGE
+	NESTED AGGREGATION: Number of Trainers with More than 1 Pokemon (Trainers who can battle each other) */
 
-CREATE VIEW trainer_in_area AS
-(SELECT b.locationName, count(trainerId) AS TRAINERCOUNT
-			 FROM Birthplace b, Trainers t
-		 	 WHERE b.locationName = t.locationName
-			 GROUP BY b.locationName);
-
-CREATE VIEW pokemon_in_area AS
-(SELECT b.locationName, count(pokemonID) AS POKEMONCOUNT
-		 	 FROM Birthplace b, Pokemon p
-		   WHERE b.locationName = p.locationName
-		   GROUP BY b.locationName);
-
-SELECT locationName
-FROM trainer_in_area NATURAL FULL OUTER JOIN pokemon_in_area
-WHERE POKEMONCOUNT > TRAINERCOUNT;
+SELECT count(*)
+FROM Trainers t
+WHERE EXISTS (SELECT p.trainerID, count(*) from Pokemon p WHERE p.trainerID = t.trainerID GROUP BY p.trainerID HAVING count(*) > 1);
 
 /* ADMIN PAGE
-	NESTED AGGREGATION: Number of Trainers with More than 3 Pokemon (Trainers who can battle each other) */
+	NESTED AGGREGATION Total cost of items for each Trainer who can battle (more than 1 Pokemon) */
 
+SELECT t.trainerName, sum(cost)
+FROM Trainers t, Items i
+WHERE t.trainerId = i.trainerId AND EXISTS (SELECT p.trainerID, count(*) from Pokemon p WHERE p.trainerID = t.trainerID GROUP BY p.trainerID HAVING count(*) > 1)
+GROUP BY t.trainerName;

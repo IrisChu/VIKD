@@ -43,10 +43,10 @@ if ($db_conn && isset($trainerID)) {
 	printResultAsTable2Columns($itemStatement, $itemName, $itemCount);
 	  
 	$itemCostSqlStmt = "
-		select unique {$itemName}, {$itemCost}
+		select {$itemName}, {$itemCost}
 		from {$trainerTable} natural inner join {$itemsTable} 
 		where TRAINERID = {$trainerID} 
-		and {$itemCost} >= ALL(select {$itemCost} from {$itemsTable})
+		and {$itemCost} >= ALL(select {$itemCost} from {$itemsTable} where TRAINERID = {$trainerID})
 	";
 	
 	$itemCostStatement = OCIParse($db_conn, $itemCostSqlStmt); 

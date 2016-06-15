@@ -77,10 +77,8 @@ if ($db_conn) {
 			from pokemon p, species s
 			where p.sname = s.sname and pokemonid = {$pokemonID}";
 
-		executeSQL($searchquery, "printResult");
+		executeSQL($searchquery, $pokemonID);
 		OCICommit($db_conn);
-
-		echo "<p>The pokemon id submitted was: " . $_REQUEST['pokemonID'];
 	}
 	// Type Pressed
 	else if (isset($_POST['typename'])) {
@@ -105,6 +103,7 @@ if ($db_conn) {
 OCILogoff($db_conn);
 
 function printResult($result) {
+
 	echo "<div><table>
 		<tr>
 			<th><b> ID </b></th>
@@ -122,6 +121,35 @@ function printResult($result) {
 					<td>" . $row['LOCATIONNAME'] . "</td></tr>";
 	}
 	echo "</table></div><br><br><br><br><br>";
+}
+
+function printPokemon($result, $pokemonID) {
+
+	echo "<div><table>
+		<tr>
+			<th><b> ID </b></th>
+			<th><b> Pokemon </b></th>
+			<th><b> Type </b></th>
+			<th><b> Gender </b></th>
+			<th><b> Location </b></th>
+		</tr>";
+
+	$row = OCI_Fetch_Array($result, OCI_BOTH);
+	$value = $row['POKEMONID'];
+
+	if(isset($value)) {
+		echo "<tr><td>" . $row['POKEMONID'] . "</td>
+					<td>" . $row['SNAME'] . "</td>
+					<td>" . $row['TYPENAME'] . "</td>
+					<td>" . $row['GENDER'] . "</td>
+					<td>" . $row['LOCATIONNAME'] . "</td></tr>";
+		
+	} else {
+		echo '<script>alert("No pokemon exists with ID '. $pokemonID .'")</script>' ;
+	}
+
+	echo "</table></div><br><br><br><br><br>";
+
 }
 
 function printType($result) {
@@ -169,8 +197,10 @@ function executeSQL($cmdstr, $print) { //takes a plain (no bound variables) SQL 
 
 	if ($print == "printType"){
 		printType($statement);
-	} else {	
+	} else if ($print == "printResult"){	
 		printResult($statement);
+	} else {
+		printPokemon($statement, $print);
 	}
 
 }

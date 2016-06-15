@@ -57,6 +57,14 @@ body {
 	padding: 2em;
 }
 
+.typeButton {
+	background-color: #1581b7;
+	color: white;
+	border: 1px solid grey;
+	font-weight: bold;
+	padding: 1px 1em;
+}
+
 .button {
 	border-radius: 8px;
 	background-color: #1581b7;
@@ -102,3 +110,4 @@ th {
 .twoCol {
 	width: 50%;
 }
+

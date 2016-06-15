@@ -18,7 +18,16 @@ echo '
   };
  
   return t;
-}(document, "script", "twitter-wjs"));</script>';
+}(document, "script", "twitter-wjs"));</script>
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.6";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, "script", "facebook-jssdk"));</script>';
 
 echo '
 	<a class="redirect" href="home.php"><img id="banner" src="resources/bannerDesign.png"></a>
@@ -43,7 +52,9 @@ echo '
   echo '<br><a class="twitter-share-button"
   href="https://twitter.com/intent/tweet?text=Check%20out%20the%20new%20Pokedex%20DB%20@"
   >
-	Tweet</a>';
+	Tweet</a>
+
+  <div class="fb-share-button" data-href="http://www.ugrad.cs.ubc.ca/~w4k8/home.php" data-layout="button_count" data-mobile-iframe="false"><a class="fb-xfbml-parse-ignore" target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=http%3A%2F%2Fwww.ugrad.cs.ubc.ca%2F%7Ew4k8%2Fhome.php&amp;src=sdkpreparse">Share</a></div>';
 
 
 

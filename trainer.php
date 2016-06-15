@@ -57,9 +57,9 @@ if ($db_conn && isset($trainerID)) {
 	
 	$itemTotalCostSqlStmt = "
 		select sum({$itemCost}) AS {$itemTotalCost}
-		from ($trainerTable} natural inner join {$itemsTable}
+		from {$trainerTable} natural inner join {$itemsTable}
 		where TRAINERID = {$trainerID}
-		";
+	";
 	$itemTotalCostStatement = OCIParse($db_conn, $itemTotalCostSqlStmt); 
 	OCIExecute($itemTotalCostStatement);
 	  

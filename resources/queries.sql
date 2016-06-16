@@ -1,25 +1,25 @@
 /* POKEMON Page
-	JOIN QUERY: Show All Pokemon */
+	Show All Pokemon */
 	 SELECT p.pokemonID, p.sname, s.typeName, p.gender, p.locationName
 	 FROM Pokemon p, Species s
 	 WHERE p.sname = s.sname
 	 ORDER BY p.pokemonID ASC;
 
 /* POKEMON Page
-	JOIN QUERY: Sort By {Attribute} */
+	 Sort By {Attribute} */
 	 SELECT p.pokemonID, p.sname, s.typeName, p.gender, p.locationName
 	 FROM Pokemon p, Species s
 	 WHERE p.sname = s.sname
 	 ORDER BY {$sortbyoption} ASC;
 
 /* POKEMON Page
-	JOIN QUERY: Search By PokemonID */
+	Search By PokemonID */
 	 SELECT p.pokemonID, p.sname, s.typeName, p.gender, p.locationName
 	 FROM Pokemon p, Species s
 	 WHERE p.sname = s.sname AND p.pokemonID = {$pokemonID};
 
 /* POKEMON Page
-	JOIN QUERY: Sort by Type */
+	Sort by Type */
 	 SELECT p.pokemonID, p.sname, s.typeName, p.gender, p.locationName
 	 FROM Pokemon p, Species s
 	 WHERE p.sname = s.sname AND s.typeName = {$typepressed};
@@ -33,7 +33,7 @@
 	WHERE trainerId = {$trainerId};
 
 /* TRAINER Page
-	AGGREGATION: Show the quantity of each item that a trainer owns */
+	Show the quantity of each item that a trainer owns */
 
 	SELECT {$itemName}, count(*) AS {$ItemCount}
 	FROM {$TrainerTable} INNER JOIN {$itemsTable}
@@ -47,21 +47,21 @@
 	WHERE trainerId = {$trainerId} AND {$itemCost} >= ALL(select {$itemCost} from {$itemsTable});
 
 /* TRAINER Page
-	AGGREGATION: Show total cost of items for a trainer */
+	Show total cost of items for a trainer */
 
 	SELECT SUM({$itemCost})
 	FROM {$TrainerTable} INNER JOIN {$itemsTable}
 	WHERE trainerId = {$trainerId};
 
 /* TRAINER Page
-	JOIN: Show Pokemon info for a trainer */
+	 Show Pokemon info for a trainer */
 
 	SELECT *
 	FROM {$TrainerTable}, pokemon
 	WHERE {$trainerTable}.trainerId = pokemon.trainerId AND {trainerTable}.trainerId = {$trainerId};
 
 /* ADMIN Page
-   DIVISION QUERY: Find trainers that own at least one pokemon of each type */
+   Find trainers that own at least one pokemon of each type */
 
 SELECT distinct t.trainerName
 FROM Trainers t, Pokemon p, Species s, Type type
@@ -80,20 +80,29 @@ WHERE t.trainerId = p.trainerId
 					AND t.trainerId = t1.trainerId));
 
 
-
+/* ADMIN Page
+   Find region with most pokemon */
 SELECT region, count(*) as POKEMONPOP
 FROM Birthplace b, Pokemon p
 WHERE b.locationName = p.locationName
 GROUP BY region
 ORDER BY POKEMONPOP DESC;
 
+/* ADMIN Page
+   Find region with most trainers */
 SELECT region, count(*) AS TrainerNumber
 FROM Birthplace b, Trainers t
 WHERE b.locationName = t.locationName
 GROUP BY region
 ORDER BY TrainerNumber desc;
 
+/* ADMIN Page
+   Update Field */
+
 update Pokemon set {$updatefield}='{$updatevalue}' where pokemonId='{$pid}');
+
+/* ADMIN Page
+   Insert Field */
 
 insert into SPECIES values ('{$sname}', '{$postEvo}', '{$preEvo}', '{$type}');
 
@@ -101,6 +110,8 @@ insert into TRAINERS values ('{$tid}', '{$tname}', '{$gender}', '{$lname}');
 
 insert into POKEMON values ('{$pid}', '{$species}', '{$gender}', '{$name}', '{$location}', '{$tid}');
 
+/* ADMIN Page
+   Delete Field */
 delete from POKEMON where pokemonId='{$pid}';
 
 delete from SPECIES where sname='{$sname}';
@@ -109,26 +120,25 @@ delete from TRAINERS where trainerId = '{$tid}';
 
 
 
-/*Pokemon Page Queries */
-
-SELECT trainerName, itemName as Poke_Ball, count(itemName) as Number_of_Balls
-FROM Trainers t, Items i
-WHERE i.trainerId = t.trainerId
-GROUP BY trainerName, itemName
-ORDER BY trainerName;
-
-
-/* ADMIN PAGE
-	NESTED AGGREGATION: Number of Trainers with More than 1 Pokemon (Trainers who can battle each other) */
+/* ADMIN Page
+	Number of Trainers with More than 1 Pokemon (Trainers who can battle each other) */
 
 SELECT count(*)
 FROM Trainers t
 WHERE EXISTS (SELECT p.trainerID, count(*) from Pokemon p WHERE p.trainerID = t.trainerID GROUP BY p.trainerID HAVING count(*) > 1);
 
-/* ADMIN PAGE
-	NESTED AGGREGATION Total cost of items for each Trainer who can battle (more than 1 Pokemon) */
+/* ADMIN Page
+	Total cost of items for each Trainer who can battle (more than 1 Pokemon) */
 
 SELECT t.trainerName, sum(cost)
+FROM Trainers t, Items i
+WHERE t.trainerId = i.trainerId AND EXISTS (SELECT p.trainerID, count(*) from Pokemon p WHERE p.trainerID = t.trainerID GROUP BY p.trainerID HAVING count(*) > 1)
+GROUP BY t.trainerName;
+
+/* ADMIN Page
+	Avg cost of items for each trainer who can battle (more than 1 Pokemon) */
+
+SELECT t.trainerName, avg(cost)
 FROM Trainers t, Items i
 WHERE t.trainerId = i.trainerId AND EXISTS (SELECT p.trainerID, count(*) from Pokemon p WHERE p.trainerID = t.trainerID GROUP BY p.trainerID HAVING count(*) > 1)
 GROUP BY t.trainerName;

@@ -20,9 +20,9 @@
 
 /* POKEMON Page
 	Sort by Type */
-	 SELECT p.pokemonID, p.sname, s.typeName, p.gender, p.locationName
-	 FROM Pokemon p, Species s
-	 WHERE p.sname = s.sname AND s.typeName = {$typepressed};
+	 SELECT distinct s.sname, s.preevo, s.postevo, s.typename, t.strength, t.weakness
+	 FROM  Species s, Type t
+	 WHERE s.typename = t.typename AND s.typeName = {$typepressed};
 
 
 /* TRAINER Page
